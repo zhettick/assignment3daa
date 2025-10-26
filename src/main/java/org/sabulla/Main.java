@@ -1,17 +1,54 @@
 package org.sabulla;
 
-//TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
-// click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
+
 public class Main {
     public static void main(String[] args) {
-        //TIP Press <shortcut actionId="ShowIntentionActions"/> with your caret at the highlighted text
-        // to see how IntelliJ IDEA suggests fixing it.
-        System.out.printf("Hello and welcome!");
+        try {
+            String content = Files.readString(Paths.get("input.json"));
+            JSONObject jsonObject = new JSONObject(content);
+            JSONArray graphs = jsonObject.getJSONArray("graphs");
 
-        for (int i = 1; i <= 5; i++) {
-            //TIP Press <shortcut actionId="Debug"/> to start debugging your code. We have set one <icon src="AllIcons.Debugger.Db_set_breakpoint"/> breakpoint
-            // for you, but you can always add more by pressing <shortcut actionId="ToggleLineBreakpoint"/>.
-            System.out.println("i = " + i);
+            JSONArray results = new JSONArray();
+
+            for(int i = 0; i < graphs.length(); i++) {
+                JSONObject graph = graphs.getJSONObject(i);
+
+                int id = graph.getInt("id");
+                JSONArray nodes = graph.getJSONArray("nodes");
+                JSONArray edges = graph.getJSONArray("edges");
+
+                List<String> nodeList = new ArrayList<>();
+                for (int n = 0; n < nodes.length(); i++) {
+                    nodeList.add(nodes.getString(n));
+                }
+
+                List<Edge> edgeList = new ArrayList<>();
+                for (int e = 0 ; e < edges.length(); e++) {
+                    JSONObject edge = edges.getJSONObject(e);
+                    String from = edge.getString("from");
+                    String to = edge.getString("to");
+                    int weight = edge.getInt("weight");
+                    edgeList.add(new Edge(from, to, weight));
+                }
+
+                KruskalAlgorithm kruskal = new KruskalAlgorithm();
+                PrimAlgorithm prim = new PrimAlgorithm();
+                Metrics kruskalMetrics = new Metrics();
+                Metrics primMetrics = new Metrics();
+
+                kruskal.runKruskal(id, nodeList, edgeList, kruskalMetrics);
+                prim.runPrim(id, nodeList, edgeList, primMetrics);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 }
