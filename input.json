@@ -80,7 +80,12 @@
         {"from": "A", "to": "W", "weight": 4},
         {"from": "G", "to": "X", "weight": 7},
         {"from": "M", "to": "Y", "weight": 17},
-        {"from": "T", "to": "Z", "weight": 6}
+        {"from": "T", "to": "Z", "weight": 6},
+        {"from": "X", "to": "Y", "weight": 10},
+        {"from": "Z", "to": "Q", "weight": 9},
+        {"from": "L", "to": "S", "weight": 12},
+        {"from": "U", "to": "I", "weight": 8},
+        {"from": "O", "to": "P", "weight": 5}
       ]
     }
   ]

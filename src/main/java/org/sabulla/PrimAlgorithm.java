@@ -1,11 +1,10 @@
 package org.sabulla;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class PrimAlgorithm {
     public void runPrim(int id, List<String> nodeList, List<Edge> edgeList, Metrics metrics) {
+        metrics.reset();
         metrics.start();
 
         Map<String, Integer> indexMap = new HashMap<>();
@@ -13,31 +12,49 @@ public class PrimAlgorithm {
             indexMap.put(nodeList.get(i), i);
         }
 
+        //  select the starting node
         boolean[] visited = new boolean[nodeList.size()];
-        visited[0] = true;
+        int start = 0;
+        visited[start] = true;
 
-        for (int i = 0; i<nodeList.size() - 1;i++) {
-            int minWeight= Integer.MAX_VALUE;
-            int bestV = -1;
-            Edge bestEdge = null;
+        PriorityQueue<Edge> pq = new PriorityQueue<>(Comparator.comparingInt(Edge::getWeight));
 
-            for (int j=0; j<edgeList.size();j++){
-                Edge edge = edgeList.get(j);
-                int u = indexMap.get(edge.getFrom());
-                int v = indexMap.get(edge.getTo());
-                if(visited[u] && !visited[v] && edge.getWeight() < minWeight) {
-                    bestV = v;
-                    minWeight = edge.getWeight();
-                    bestEdge = edge;
-                }
+        //  add edges connected to the starting node to the priority queue
+        for (Edge edge : edgeList) {
+            if (edge.getFrom().equals(nodeList.get(start)) || edge.getTo().equals(nodeList.get(start))) {
+                pq.add(edge);
                 metrics.addOperations();
             }
-            if(bestEdge != null) {
-                visited[bestV] =true;
-                metrics.addEdge(bestEdge);
-                metrics.addOperations();
+        }
+
+        //  build MST by selecting the smallest free edge
+        while (!pq.isEmpty()) {
+            Edge edge = pq.poll();
+            metrics.addOperations();
+
+            int u = indexMap.get(edge.getFrom()), v = indexMap.get(edge.getTo());
+            int next = -1;
+
+            if (visited[u] && !visited[v]) {
+                next = v;
+            } else if (visited[v] && !visited[u]) {
+                next = u;
             } else {
-                break;
+                continue;
+            }
+
+            visited[next] = true;
+            metrics.addEdge(edge);
+            metrics.addOperations();
+
+            //  add edges connected to the next node to the priority queue
+            for (Edge e : edgeList) {
+                int from = indexMap.get(e.getFrom());
+                int to = indexMap.get(e.getTo());
+                if ((from == next && !visited[to]) || (to == next && !visited[from])) {
+                    pq.add(e);
+                    metrics.addOperations();
+                }
             }
         }
         metrics.stop();

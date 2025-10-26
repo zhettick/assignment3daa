@@ -8,7 +8,7 @@ public class Metrics {
     private int costMST;
     private int operations;
     private long startTime;
-    private long time;
+    private double time;
 
     public void addEdge(Edge edge) {
         edgeMST.add(edge);
@@ -27,6 +27,13 @@ public class Metrics {
         time = System.nanoTime() - startTime;
     }
 
+    public void reset() {
+        costMST = 0;
+        operations = 0;
+        startTime = 0;
+        time = 0;
+    }
+
     public List<Edge> getEdgeMST() {
         return edgeMST;
     }
@@ -39,7 +46,7 @@ public class Metrics {
         return operations;
     }
 
-    public long getTime() {
-        return time / 1000000;
+    public double getTime() {
+        return time / 1000000.0;
     }
 }
